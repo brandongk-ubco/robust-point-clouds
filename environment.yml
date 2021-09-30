@@ -1,0 +1,13 @@
+name: robust
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.7
+  - cudatoolkit=11.1
+  - git
+  - pip
+  - pytorch
+  - torchvision
+  - torchaudio
+  - shapely

@@ -1,0 +1,16 @@
+yapf
+pytorch-lightning
+lightning_bolts
+seaborn
+argh
+jsonargparse[signatures]
+p_tqdm
+flatten_dict
+jupyterlab
+mmcv-full==1.3.13
+mmdet==2.16.0
+mmsegmentation==0.17.0
+git+https://github.com/open-mmlab/mmdetection3d
+open3d
+flake8
+yapf

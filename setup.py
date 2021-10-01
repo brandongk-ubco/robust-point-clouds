@@ -12,7 +12,7 @@ setuptools.setup(name="robustpointclouds",
                  long_description=long_description,
                  long_description_content_type="text/markdown",
                  url="https://github.com/ACIS2021/robust-point-clouds",
-                 packages=['ensembler'],
+                 packages=['robustpointclouds'],
                  install_requires=[],
                  classifiers=[
                      "Programming Language :: Python :: 3",

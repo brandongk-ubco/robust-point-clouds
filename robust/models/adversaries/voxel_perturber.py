@@ -25,4 +25,4 @@ class VoxelPerturber(nn.Module):
         perturbation = perturbation.squeeze()
         perturbation = perturbation.transpose(0, 1)
 
-        return points + perturbation
+        return perturbation

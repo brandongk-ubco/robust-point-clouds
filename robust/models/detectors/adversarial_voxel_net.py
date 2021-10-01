@@ -14,7 +14,8 @@ class AdversarialVoxelNet(VoxelNet):
         """Extract features from points."""
         voxels, num_points, coors = self.voxelize(points)
         voxel_features = self.voxel_encoder(voxels, num_points, coors)
-        voxel_features = self.adversary(voxel_features)
+        perturbation = self.adversary(voxel_features)
+        voxel_features = voxel_features + perturbation
         batch_size = coors[-1, 0].item() + 1
         x = self.middle_encoder(voxel_features, coors, batch_size)
         x = self.backbone(x)

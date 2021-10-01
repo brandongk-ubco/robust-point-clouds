@@ -20,7 +20,7 @@ class mmdetection3dLightningModule(pl.LightningModule):
                  patience: int = 3,
                  learning_rate: float = 5e-3,
                  min_learning_rate: float = 5e-4,
-                 weight_decay: float = 0.0):
+                 weight_decay: float = 0.01):
         super().__init__()
         self.save_hyperparameters()
 

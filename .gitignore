@@ -4,6 +4,9 @@ __pycache__/
 *$py.class
 data/
 checkpoints/
+checkpoints/*
+lightning_logs/
+lightning_logs/*
 
 # C extensions
 *.so

@@ -6,6 +6,8 @@ from pytorch_lightning.core.lightning import LightningModule
 from pytorch_lightning.trainer.trainer import Trainer
 import os
 import sys
+from robust.models.detectors.adversarial_voxel_net import AdversarialVoxelNet as _
+from robust.models.adversaries.voxel_perturber import VoxelPerturber as _
 
 
 class MySaveConfigCallback(SaveConfigCallback):

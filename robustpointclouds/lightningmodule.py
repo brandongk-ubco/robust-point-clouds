@@ -19,7 +19,8 @@ class mmdetection3dLightningModule(pl.LightningModule):
                  checkpoint_file: str,
                  learning_rate: float = 5e-4,
                  weight_decay: float = 5e-3,
-                 l1_regularization: float = .1):
+                 perturbation_norm_regularizer: float = 3.,
+                 perturbation_bias_regularizer: float = 10.):
         super().__init__()
         self.save_hyperparameters()
 
@@ -57,9 +58,8 @@ class mmdetection3dLightningModule(pl.LightningModule):
 
     def configure_callbacks(self):
         callbacks = [
-            ModelCheckpoint(monitor='val_loss',
-                            save_top_k=1,
-                            mode="min",
+            ModelCheckpoint(save_top_k=-1,
+                            save_last=True,
                             filename='{epoch}-{val_loss:.6f}'),
         ]
 
@@ -114,41 +114,47 @@ class mmdetection3dLightningModule(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         results = self(batch, return_loss=True)
+        perturbation_norm = results.pop("perturbation_norm")
+        perturbation_bias = results.pop("perturbation_bias")
+
         losses = []
         for loss_type, loss in results.items():
             losses += loss
         model_loss = torch.sum(torch.stack(losses))
 
-        L1_reg = torch.tensor(0., requires_grad=True)
-        for name, param in self.model.adversary.named_parameters():
-            if 'weight' in name or 'bias' in name:
-                L1_reg = L1_reg + torch.norm(param, 1)
+        self.log_dict(
+            {
+                "model_loss": model_loss,
+                "perturbation_norm": perturbation_norm,
+                "perturbation_bias": perturbation_bias
+            },
+            prog_bar=True,
+            on_step=True,
+            on_epoch=False)
 
-        L1_reg = L1_reg * self.hparams.l1_regularization
-
-        self.log_dict({
-            "model_loss": model_loss,
-            "L1_loss": L1_reg
-        },
-                      prog_bar=True,
-                      on_step=True,
-                      on_epoch=False)
-
-        return -model_loss + L1_reg
+        return -model_loss + perturbation_norm * self.hparams.perturbation_norm_regularizer + perturbation_bias * self.hparams.perturbation_bias_regularizer
 
     def validation_step(self, batch, batch_idx):
         results = self(batch, return_loss=True)
-
+        perturbation_norm = results.pop("perturbation_norm")
+        perturbation_bias = results.pop("perturbation_bias")
         losses = []
         for loss_type, loss in results.items():
             losses += loss
         model_loss = torch.sum(torch.stack(losses))
 
-        self.log('val_loss',
-                 model_loss,
-                 on_step=False,
-                 on_epoch=True,
-                 prog_bar=True)
+        val_loss = -model_loss + perturbation_norm * self.hparams.perturbation_norm_regularizer + perturbation_bias * self.hparams.perturbation_bias_regularizer
+
+        self.log_dict(
+            {
+                "val_model_loss": model_loss,
+                "val_perturbation_norm": perturbation_norm,
+                "val_perturbation_bias": perturbation_bias,
+                "val_loss": val_loss
+            },
+            prog_bar=True,
+            on_step=False,
+            on_epoch=True)
 
     def test_step(self, batch, batch_idx):
         y_hat = self(batch)

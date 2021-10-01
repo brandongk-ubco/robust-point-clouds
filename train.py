@@ -1,13 +1,13 @@
-from robust.lightningmodule import mmdetection3dLightningModule
-from robust.datamodule import mmdetection3dDataModule
+from robustpointclouds.lightningmodule import mmdetection3dLightningModule
+from robustpointclouds.datamodule import mmdetection3dDataModule
 from pytorch_lightning.utilities.cli import LightningCLI
 from pytorch_lightning.utilities.cli import SaveConfigCallback
 from pytorch_lightning.core.lightning import LightningModule
 from pytorch_lightning.trainer.trainer import Trainer
 import os
 import sys
-from robust.models.detectors.adversarial_voxel_net import AdversarialVoxelNet as _
-from robust.models.adversaries.voxel_perturber import VoxelPerturber as _
+from robustpointclouds.models.detectors.adversarial_voxel_net import AdversarialVoxelNet as _
+from robustpointclouds.models.adversaries.voxel_perturber import VoxelPerturber as _
 
 
 class MySaveConfigCallback(SaveConfigCallback):

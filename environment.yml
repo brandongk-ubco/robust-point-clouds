@@ -1,4 +1,4 @@
-name: robust
+name: robustpointclouds
 channels:
   - pytorch
   - conda-forge

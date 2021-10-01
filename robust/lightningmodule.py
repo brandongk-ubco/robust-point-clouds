@@ -8,7 +8,7 @@ import copy
 from mmcv.runner import load_checkpoint
 from mmdet3d.datasets import build_dataset
 import torch
-from pytorch_lightning.callbacks import LearningRateMonitor, EarlyStopping, ModelCheckpoint, GPUStatsMonitor
+from pytorch_lightning.callbacks import ModelCheckpoint, GPUStatsMonitor
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
 
 
@@ -17,10 +17,9 @@ class mmdetection3dLightningModule(pl.LightningModule):
     def __init__(self,
                  config_file: str,
                  checkpoint_file: str,
-                 patience: int = 3,
-                 learning_rate: float = 5e-3,
-                 min_learning_rate: float = 5e-4,
-                 weight_decay: float = 0.01):
+                 learning_rate: float = 5e-4,
+                 weight_decay: float = 5e-3,
+                 l1_regularization: float = .1):
         super().__init__()
         self.save_hyperparameters()
 
@@ -58,11 +57,6 @@ class mmdetection3dLightningModule(pl.LightningModule):
 
     def configure_callbacks(self):
         callbacks = [
-            LearningRateMonitor(logging_interval='epoch', log_momentum=True),
-            EarlyStopping(patience=2 * self.hparams.patience,
-                          monitor='val_loss',
-                          verbose=True,
-                          mode='min'),
             ModelCheckpoint(monitor='val_loss',
                             save_top_k=1,
                             mode="min",
@@ -80,20 +74,7 @@ class mmdetection3dLightningModule(pl.LightningModule):
                                      lr=self.hparams.learning_rate,
                                      weight_decay=self.hparams.weight_decay)
 
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
-            optimizer,
-            patience=self.hparams.patience,
-            min_lr=self.hparams.min_learning_rate,
-            verbose=True,
-            mode="min")
-
-        return {
-            "optimizer": optimizer,
-            "lr_scheduler": {
-                "scheduler": scheduler,
-                "monitor": "val_loss"
-            }
-        }
+        return {"optimizer": optimizer}
 
     def forward(self, sample, return_loss=False):
 
@@ -138,7 +119,22 @@ class mmdetection3dLightningModule(pl.LightningModule):
             losses += loss
         model_loss = torch.sum(torch.stack(losses))
 
-        return model_loss
+        L1_reg = torch.tensor(0., requires_grad=True)
+        for name, param in self.model.adversary.named_parameters():
+            if 'weight' in name or 'bias' in name:
+                L1_reg = L1_reg + torch.norm(param, 1)
+
+        L1_reg = L1_reg * self.hparams.l1_regularization
+
+        self.log_dict({
+            "model_loss": model_loss,
+            "L1_loss": L1_reg
+        },
+                      prog_bar=True,
+                      on_step=True,
+                      on_epoch=False)
+
+        return -model_loss + L1_reg
 
     def validation_step(self, batch, batch_idx):
         results = self(batch, return_loss=True)

@@ -30,15 +30,14 @@ class mmdetection3dDataModule(pl.LightningDataModule):
         return data_loader
 
     def val_dataloader(self):
-        data_loader = torch.utils.data.DataLoader(self.val_dataset,
-                                                  batch_size=1,
-                                                  num_workers=self.num_workers,
-                                                  shuffle=False,
-                                                  drop_last=True,
-                                                  pin_memory=True,
-                                                  collate_fn=partial(
-                                                      collate,
-                                                      samples_per_gpu=1))
+        data_loader = torch.utils.data.DataLoader(
+            self.val_dataset,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+            shuffle=False,
+            drop_last=True,
+            pin_memory=True,
+            collate_fn=partial(collate, samples_per_gpu=self.batch_size))
         return data_loader
 
     def test_dataloader(self):

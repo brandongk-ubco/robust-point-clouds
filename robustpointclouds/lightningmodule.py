@@ -4,7 +4,6 @@ from mmdet import __version__ as mmdet_version
 from mmdet3d import __version__ as mmdet3d_version
 from mmseg import __version__ as mmseg_version
 from mmdet3d.models import build_model
-import copy
 from mmcv.runner import load_checkpoint
 from mmdet3d.datasets import build_dataset
 import torch
@@ -20,7 +19,8 @@ class mmdetection3dLightningModule(pl.LightningModule):
                  learning_rate: float = 5e-4,
                  weight_decay: float = 5e-3,
                  perturbation_norm_regularizer: float = 3.,
-                 perturbation_bias_regularizer: float = 10.):
+                 perturbation_bias_regularizer: float = 10.,
+                 perturbation_imbalance_regularizer: float = 10.):
         super().__init__()
         self.save_hyperparameters()
 
@@ -78,13 +78,11 @@ class mmdetection3dLightningModule(pl.LightningModule):
 
     def forward(self, sample, return_loss=False):
 
-        data = copy.deepcopy(sample)
-
         data = {
-            "points": data["points"].data[0],
-            "img_metas": data["img_metas"].data[0],
-            "gt_labels_3d": data["gt_labels_3d"].data[0],
-            "gt_bboxes_3d": data["gt_bboxes_3d"].data[0]
+            "points": sample["points"].data[0],
+            "img_metas": sample["img_metas"].data[0],
+            "gt_labels_3d": sample["gt_labels_3d"].data[0],
+            "gt_bboxes_3d": sample["gt_bboxes_3d"].data[0]
         }
 
         for i in data["img_metas"]:
@@ -116,6 +114,7 @@ class mmdetection3dLightningModule(pl.LightningModule):
         results = self(batch, return_loss=True)
         perturbation_norm = results.pop("perturbation_norm")
         perturbation_bias = results.pop("perturbation_bias")
+        perturbation_imbalance = results.pop("perturbation_imbalance")
 
         losses = []
         for loss_type, loss in results.items():
@@ -125,39 +124,40 @@ class mmdetection3dLightningModule(pl.LightningModule):
         self.log_dict(
             {
                 "model_loss": model_loss,
-                "perturbation_norm": perturbation_norm,
-                "perturbation_bias": perturbation_bias
+                "ptb_norm": perturbation_norm,
+                "ptb_bias": perturbation_bias,
+                "ptb_imbalance": perturbation_imbalance
             },
             prog_bar=True,
             on_step=True,
             on_epoch=False)
 
-        return -model_loss + perturbation_norm * self.hparams.perturbation_norm_regularizer + perturbation_bias * self.hparams.perturbation_bias_regularizer
+        return -model_loss + perturbation_norm * self.hparams.perturbation_norm_regularizer + perturbation_bias * self.hparams.perturbation_bias_regularizer + perturbation_imbalance * self.hparams.perturbation_imbalance_regularizer
 
     def validation_step(self, batch, batch_idx):
         results = self(batch, return_loss=True)
         perturbation_norm = results.pop("perturbation_norm")
         perturbation_bias = results.pop("perturbation_bias")
+        perturbation_imbalance = results.pop("perturbation_imbalance")
         losses = []
         for loss_type, loss in results.items():
             losses += loss
         model_loss = torch.sum(torch.stack(losses))
 
-        val_loss = -model_loss + perturbation_norm * self.hparams.perturbation_norm_regularizer + perturbation_bias * self.hparams.perturbation_bias_regularizer
+        val_loss = -model_loss + perturbation_norm * self.hparams.perturbation_norm_regularizer + perturbation_bias * self.hparams.perturbation_bias_regularizer + perturbation_imbalance * self.hparams.perturbation_imbalance_regularizer
 
-        self.log_dict(
-            {
-                "val_model_loss": model_loss,
-                "val_perturbation_norm": perturbation_norm,
-                "val_perturbation_bias": perturbation_bias,
-                "val_loss": val_loss
-            },
-            prog_bar=True,
-            on_step=False,
-            on_epoch=True)
+        self.log_dict({
+            "val_model_loss": model_loss,
+            "val_loss": val_loss
+        },
+                      prog_bar=True,
+                      on_step=False,
+                      on_epoch=True)
 
     def test_step(self, batch, batch_idx):
-        y_hat = self(batch)
+        y_hat = self(batch, return_loss=True)
+
+        return y_hat
 
 
 __all__ = [mmdetection3dLightningModule]

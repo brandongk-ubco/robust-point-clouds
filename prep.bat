@@ -1,0 +1,1 @@
+python prep.py kitti --out-dir "./data/kitti"

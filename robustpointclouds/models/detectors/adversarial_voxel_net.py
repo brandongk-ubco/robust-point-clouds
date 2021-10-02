@@ -93,4 +93,7 @@ class AdversarialVoxelNet(VoxelNet):
             perturbation, dim=0),
                                                                ord=2)
 
+        losses["perturbation_imbalance"] = torch.std(
+            torch.mean(perturbation, dim=0))
+
         return losses

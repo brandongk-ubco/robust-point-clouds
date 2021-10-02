@@ -9,6 +9,7 @@ from mmdet3d.datasets import build_dataset
 import torch
 from pytorch_lightning.callbacks import ModelCheckpoint, GPUStatsMonitor
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
+from mmdet3d.apis.inference import inference_detector
 
 
 class mmdetection3dLightningModule(pl.LightningModule):
@@ -40,6 +41,8 @@ class mmdetection3dLightningModule(pl.LightningModule):
         self.model = build_model(self.cfg.model,
                                  train_cfg=self.cfg.get('train_cfg'),
                                  test_cfg=self.cfg.get('test_cfg'))
+
+        self.model.cfg = self.cfg
 
         for child in [
                 c[1] for c in self.model.named_children() if c[0] != "adversary"
@@ -155,9 +158,13 @@ class mmdetection3dLightningModule(pl.LightningModule):
                       on_epoch=True)
 
     def test_step(self, batch, batch_idx):
-        y_hat = self(batch, return_loss=True)
+        with torch.no_grad():
+            y_hat = self(batch, return_loss=True)
 
         return y_hat
+
+    def predict_file(self, filename):
+        return inference_detector(self.model, filename)
 
 
 __all__ = [mmdetection3dLightningModule]

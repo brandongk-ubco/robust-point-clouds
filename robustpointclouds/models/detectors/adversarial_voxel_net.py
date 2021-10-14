@@ -92,8 +92,7 @@ class AdversarialVoxelNet(VoxelNet):
         losses["perturbation_bias"] = torch.linalg.vector_norm(torch.mean(
             perturbation, dim=0),
                                                                ord=2)
-
         losses["perturbation_imbalance"] = torch.std(
             torch.mean(perturbation, dim=0))
 
-        return losses
+        return losses, perturbation

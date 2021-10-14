@@ -11,8 +11,28 @@ from functools import partial
 
 def evaluate_sample(sample, baseline, adversarial):
     batch_idx, batch = sample
-    baseline_loss = baseline.test_step(batch, batch_idx)
-    adversarial_loss = adversarial.test_step(batch, batch_idx)
+    baseline_loss, _ = baseline.test_step(batch, batch_idx)
+    adversarial_loss, adversarial_perturbation = adversarial.test_step(
+        batch, batch_idx)
+
+    intensity_perturbation = {
+        "adversarial_intensity_mean":
+            torch.mean(adversarial_perturbation[:, 3]),
+        "adversarial_intensity_median":
+            torch.median(adversarial_perturbation[:, 3]),
+        "adversarial_intensity_std":
+            torch.std(adversarial_perturbation[:, 3])
+    }
+
+    direction_norm = torch.linalg.vector_norm(adversarial_perturbation[:, :3],
+                                              dim=1,
+                                              ord=2)
+
+    direction_perturbation = {
+        "adversarial_direction_norm_mean": torch.mean(direction_norm),
+        "adversarial_direction_norm_median": torch.median(direction_norm),
+        "adversarial_direction_norm_std": torch.std(direction_norm)
+    }
 
     adversarial_loss = {
         "adversarial_" + str(key): val[0] if type(val) is list else val
@@ -23,7 +43,12 @@ def evaluate_sample(sample, baseline, adversarial):
         for key, val in baseline_loss.items()
     }
 
-    result = {**baseline_loss, **adversarial_loss}
+    result = {
+        **baseline_loss,
+        **adversarial_loss,
+        **direction_perturbation,
+        **intensity_perturbation
+    }
     result = {
         key: val.detach().cpu().numpy().item() for key, val in result.items()
     }
@@ -55,7 +80,7 @@ def evaluate_loss(config_file: str, baseline_config_file: str,
 
     baseline = baseline.eval().to("cuda")
     adversarial = adversarial.eval().to("cuda")
-    data_loader = data_module.val_dataloader()
+    data_loader = data_module.test_dataloader()
     results = []
 
     evaluator = partial(evaluate_sample,

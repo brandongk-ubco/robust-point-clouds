@@ -159,9 +159,13 @@ class mmdetection3dLightningModule(pl.LightningModule):
 
     def test_step(self, batch, batch_idx):
         with torch.no_grad():
-            y_hat = self(batch, return_loss=True)
-
-        return y_hat
+            result = self(batch, return_loss=True)
+            if type(result) is tuple:
+                losses, perturbation = result
+            else:
+                losses = result
+                perturbation = None
+        return losses, perturbation
 
     def predict_file(self, filename):
         return inference_detector(self.model, filename)

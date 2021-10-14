@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 
 def visualize_loss(lightning_outdir: str):
-    sns.set(rc={'figure.figsize': (11, 2.5)})
+    sns.set(rc={'figure.figsize': (11, 6)})
 
     lightning_outdir = os.path.abspath(lightning_outdir)
     infile = os.path.join(lightning_outdir, "evaluation_results.csv")
@@ -16,8 +16,8 @@ def visualize_loss(lightning_outdir: str):
     results = results.T.reset_index()
     results["model"] = results.apply(lambda row: row["index"].split("_")[0],
                                      axis=1)
-    results["metric"] = results.apply(lambda row: row["index"].split("_")[-1],
-                                      axis=1)
+    results["metric"] = results.apply(
+        lambda row: "_".join(row["index"].split("_")[1:]), axis=1)
 
     results = results.drop("index", axis=1)
     results = results.set_index(["model", "metric"])
@@ -35,20 +35,37 @@ def visualize_loss(lightning_outdir: str):
 
     def metric_mapper(row):
         metric = row["metric"]
-        if metric == "norm":
-            return "L2 Norm"
-        if metric == "bias":
+        if metric == "perturbation_norm":
+            return "Norm"
+        if metric == "perturbation_bias":
             return "Bias"
-        if metric == "imbalance":
+        if metric == "perturbation_imbalance":
             return "Imbalance"
-        if metric == "cls":
+        if metric == "loss_cls":
             return "Classification"
-        if metric == "bbox":
+        if metric == "loss_bbox":
             return "Bounding Box"
-        if metric == "dir":
+        if metric == "loss_dir":
             return "Direction"
 
+        if metric == 'direction_norm_mean':
+            return "Mean Direction"
+        if metric == 'direction_norm_std':
+            return "Std Direction"
+
+        if metric == 'intensity_mean':
+            return "Mean Intensity"
+        if metric == 'intensity_std':
+            return "Std Intensity"
+
+        if metric in ["direction_norm_median", "intensity_median"]:
+            return None
+
+        raise ValueError("Unknown Metric {}".format(metric))
+
     unrolled["metric"] = unrolled.apply(metric_mapper, axis=1)
+
+    unrolled = unrolled.dropna()
 
     losses = unrolled[unrolled["metric"].isin(
         ["Classification", "Bounding Box", "Direction"])]
@@ -66,9 +83,27 @@ def visualize_loss(lightning_outdir: str):
     plt.close()
 
     perturbations = unrolled[unrolled["metric"].isin(
-        ["L2 Norm", "Bias", "Imbalance"])]
+        ["Mean Direction", "Std Direction", "Mean Intensity", "Std Intensity"])]
 
-    plot = sns.boxplot(x="metric", y="value", data=perturbations)
+    perturbations = perturbations.copy()
+
+    perturbations[['Calculation',
+                   'Type']] = perturbations.metric.str.split(expand=True)
+
+    def type_mapper(row):
+        type = row["Type"]
+        if type == "Intensity":
+            return "Intensity (%)"
+        if type == "Direction":
+            return "Position (m)"
+        raise ValueError("Unknown Type {}".format(type))
+
+    perturbations["Type"] = perturbations.apply(type_mapper, axis=1)
+
+    plot = sns.boxplot(x="Type",
+                       y="value",
+                       data=perturbations,
+                       hue='Calculation')
     fig = plot.get_figure()
     plt.title("")
     plt.xlabel("")

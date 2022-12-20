@@ -7,7 +7,7 @@ from mmdet3d.models import build_model
 from mmcv.runner import load_checkpoint
 from mmdet3d.datasets import build_dataset
 import torch
-from pytorch_lightning.callbacks import ModelCheckpoint, GPUStatsMonitor
+from pytorch_lightning.callbacks import ModelCheckpoint, DeviceStatsMonitor
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from mmdet3d.apis.inference import inference_detector
 
@@ -67,7 +67,7 @@ class mmdetection3dLightningModule(pl.LightningModule):
         ]
 
         try:
-            callbacks.append(GPUStatsMonitor())
+            callbacks.append(DeviceStatsMonitor())
         except MisconfigurationException:
             pass
         return callbacks

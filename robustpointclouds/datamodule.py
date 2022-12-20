@@ -9,7 +9,7 @@ import copy
 
 class mmdetection3dDataModule(pl.LightningDataModule):
 
-    def __init__(self, config_file: str, batch_size: int = 8, num_workers=8):
+    def __init__(self, config_file: str, batch_size: int = 2, num_workers=8):
         super().__init__()
         self.cfg = Config.fromfile(config_file)
         self.batch_size = batch_size

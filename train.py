@@ -1,6 +1,6 @@
 from robustpointclouds.lightningmodule import mmdetection3dLightningModule
 from robustpointclouds.datamodule import mmdetection3dDataModule
-from pytorch_lightning.utilities.cli import LightningCLI
+from pytorch_lightning.cli import LightningCLI
 from pytorch_lightning.utilities.cli import SaveConfigCallback
 from pytorch_lightning.core.lightning import LightningModule
 from pytorch_lightning.trainer.trainer import Trainer

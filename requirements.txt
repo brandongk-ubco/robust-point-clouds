@@ -1,16 +1,15 @@
-yapf
 pytorch-lightning
 lightning_bolts
 seaborn
 argh
 jsonargparse[signatures]
-p_tqdm
 flatten_dict
 jupyterlab
-mmcv-full==1.3.13
-mmdet==2.16.0
-mmsegmentation==0.17.0
+-f https://download.openmmlab.com/mmcv/dist/cu115/torch1.11/index.html mmcv-full==1.6.0
+mmdet==2.26.0
+mmsegmentation==0.29.1
 git+https://github.com/open-mmlab/mmdetection3d
 open3d
 flake8
 yapf
+numba==0.56.4

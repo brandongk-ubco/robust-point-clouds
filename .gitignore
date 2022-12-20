@@ -7,6 +7,8 @@ checkpoints/
 checkpoints/*
 lightning_logs/
 lightning_logs/*
+mmdetection3d/
+mmdetection3d/*
 
 # C extensions
 *.so

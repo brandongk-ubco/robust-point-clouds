@@ -35,7 +35,7 @@ class mmdetection3dDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
             shuffle=True,
             drop_last=True,
-            pin_memory=False,
+            pin_memory=True,
             collate_fn=partial(collate, samples_per_gpu=self.batch_size))
         return data_loader
 
@@ -46,7 +46,7 @@ class mmdetection3dDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
             shuffle=False,
             drop_last=True,
-            pin_memory=False,
+            pin_memory=True,
             collate_fn=partial(collate, samples_per_gpu=self.batch_size))
         return data_loader
 
@@ -56,11 +56,11 @@ class mmdetection3dDataModule(pl.LightningDataModule):
                                                   num_workers=self.num_workers,
                                                   shuffle=False,
                                                   drop_last=False,
-                                                  pin_memory=False,
+                                                  pin_memory=True,
                                                   collate_fn=partial(
                                                       collate,
                                                       samples_per_gpu=1))
         return data_loader
 
 
-__all__ = [mmdetection3dDataModule]
+__all__ = ["mmdetection3dDataModule"]

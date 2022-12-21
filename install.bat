@@ -10,3 +10,4 @@ call git clone https://github.com/open-mmlab/mmdetection3d.git
 call cd mmdetection3d
 call pip install -e .
 call cd ..
+call pip install --upgrade numba

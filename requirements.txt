@@ -8,4 +8,4 @@ jupyterlab
 flake8
 yapf
 openmim
-torch-tb-profiler-0.4.0
+torch-tb-profiler

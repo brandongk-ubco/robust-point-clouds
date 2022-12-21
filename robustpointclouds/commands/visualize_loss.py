@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 
 
 def visualize_loss(lightning_outdir: str):
-    sns.set(rc={'figure.figsize': (11, 6)})
+    sns.set(rc={'figure.figsize': (11, 5.5)})
 
     lightning_outdir = os.path.abspath(lightning_outdir)
     infile = os.path.join(lightning_outdir, "evaluation_results.csv")

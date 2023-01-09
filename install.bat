@@ -1,7 +1,6 @@
 call conda deactivate
-call conda install mamba -n base -c conda-forge
 call conda env remove -n robustpointclouds
-call mamba env create -f environment.yml
+call conda env create -f environment.yml
 call conda activate robustpointclouds
 call mim install mmcv-full==1.6.2
 call mim install mmdet==2.26.0

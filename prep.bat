@@ -1,3 +1,4 @@
+rem Install wget from here: https://eternallybored.org/misc/wget/
 mkdir "data/kitti"
 wget -c https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_velodyne.zip --no-check-certificate --content-disposition -O ./data/kitti/data_object_velodyne.zip
 wget -c https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_image_2.zip --no-check-certificate --content-disposition -O ./data/kitti/data_object_image_2.zip

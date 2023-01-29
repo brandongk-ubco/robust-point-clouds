@@ -9,3 +9,4 @@ flake8
 yapf
 openmim
 torch-tb-profiler
+pefile

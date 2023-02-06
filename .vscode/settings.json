@@ -1,5 +1,5 @@
 {
-    "python.defaultInterpreterPath": "~/Miniconda3/envs/robustpointclouds/python.exe",
+    "python.defaultInterpreterPath": "D:/Brandon//envs//robustpointclouds//python.exe",
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,

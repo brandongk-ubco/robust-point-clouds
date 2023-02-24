@@ -1,7 +1,7 @@
 call conda deactivate
 call conda env remove -n robustpointclouds
 call conda env create -f environment.yml
-@REM call conda activate robustpointclouds
+call conda activate robustpointclouds
 call mim install mmcv-full==1.6.2
 call mim install mmdet==2.26.0
 call mim install mmsegmentation==0.29.1

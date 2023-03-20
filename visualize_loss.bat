@@ -1,1 +1,1 @@
-python -m robustpointclouds visualize-loss "lightning_logs/version_1"
+python -m robustpointclouds visualize-loss "lightning_logs/version_0"

@@ -1,6 +1,7 @@
 import argh
 from robustpointclouds.models.detectors.adversarial_voxel_net import AdversarialVoxelNet as _
 from robustpointclouds.models.adversaries.voxel_perturber import VoxelPerturber as _
+from robustpointclouds.models.detectors.adversarial_ssd3d_net import Adversarialssd3dnet as _
 from robustpointclouds.commands import evaluate_loss, predict, visualize_loss
 
 parser = argh.ArghParser()

@@ -1,5 +1,6 @@
 _base_ = [
-    '../_base_/models/3dssd.py', '../_base_/datasets/kitti-3d-car.py',
+    '../_base_/models/3dssd.py', 
+    '../_base_/datasets/kitti-3d-car.py',
     '../_base_/default_runtime.py'
 ]
 
@@ -98,7 +99,7 @@ evaluation = dict(interval=2)
 
 # model settings
 model = dict(
-    type="AdversarialVoxelNet",
+    type="Adversarialssd3dnet",
     adversary=dict(type='VoxelPerturber'),
     bbox_head=dict(
         num_classes=1,

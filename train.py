@@ -7,6 +7,7 @@ from pytorch_lightning.trainer.trainer import Trainer
 import os
 import sys
 import robustpointclouds.models.detectors.adversarial_voxel_net  # noqa: F401
+import robustpointclouds.models.detectors.adversarial_ssd3d_net  # noqa: F401
 import robustpointclouds.models.adversaries.voxel_perturber  # noqa: F401
 
 
@@ -32,6 +33,7 @@ if __name__ == "__main__":
                          mmdetection3dDataModule,
                          seed_everything_default=42,
                          trainer_defaults={
-                             "gpus": -1,
+                             "accelerator": "gpu",
+                             "devices": 1,
                              "max_epochs": sys.maxsize
                          })

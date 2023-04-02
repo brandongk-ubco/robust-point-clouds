@@ -8,7 +8,9 @@ import os
 import sys
 import robustpointclouds.models.detectors.adversarial_voxel_net  # noqa: F401
 import robustpointclouds.models.detectors.adversarial_ssd3d_net  # noqa: F401
+import robustpointclouds.models.detectors.adversarial_parta2  # noqa: F401
 import robustpointclouds.models.adversaries.voxel_perturber  # noqa: F401
+import robustpointclouds.models.adversaries.ssd_perturber  # noqa: F401
 
 
 class MySaveConfigCallback(SaveConfigCallback):

@@ -3,5 +3,5 @@ python train.py ^
     --trainer.max_epochs 10 ^
     --data.batch_size 12 ^
     --data.num_workers 12 ^
-    --model.config_file "configs/3dssd/3dssd_4x4_kitti-3d-car-adversarial.py" ^
-    --model.checkpoint_file "checkpoints/3dssd_4x4_kitti-3d-car_20210818_203828-b89c8fc4.pth"
+    --model.config_file "configs/parta2/hv_PartA2_secfpn_2x8_cyclic_80e_kitti-3d-car_adversarial.py" ^
+    --model.checkpoint_file "checkpoints/hv_PartA2_secfpn_2x8_cyclic_80e_kitti-3d-car_20200620_230755-f2a38b9a.pth"

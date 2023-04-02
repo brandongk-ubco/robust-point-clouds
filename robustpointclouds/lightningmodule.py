@@ -7,6 +7,7 @@ from mmdet3d.models import build_model
 from mmcv.runner import load_checkpoint
 from mmdet3d.datasets import build_dataset
 import torch
+import tensorflow as tf
 from pytorch_lightning.callbacks import ModelCheckpoint, DeviceStatsMonitor
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from mmdet3d.apis.inference import inference_detector
@@ -125,6 +126,9 @@ class mmdetection3dLightningModule(pl.LightningModule):
         loss_values = []
         for _, loss in losses.items():
             loss_values += loss
+            # loss_values.append(loss)
+            if len(loss_values) == 3:
+                break
         model_loss = torch.sum(torch.stack(loss_values))
 
         self.log_dict(
@@ -158,7 +162,13 @@ class mmdetection3dLightningModule(pl.LightningModule):
         perturbation_imbalance = losses.pop("perturbation_imbalance")
         loss_values = []
         for loss_type, loss in losses.items():
+            # if tf.rank(loss) != 0:
+            # import pdb
+            # pdb.set_trace()
             loss_values += loss
+            # loss_values.append(loss)
+            if len(loss_values) == 3:
+                break
         model_loss = torch.sum(torch.stack(loss_values))
 
         val_loss = -model_loss

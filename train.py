@@ -1,3 +1,5 @@
+from mmdet3d import datasets
+
 from robustpointclouds.lightningmodule import mmdetection3dLightningModule
 from robustpointclouds.datamodule import mmdetection3dDataModule
 from pytorch_lightning.cli import LightningCLI
@@ -7,7 +9,6 @@ from pytorch_lightning.trainer.trainer import Trainer
 import os
 import sys
 import robustpointclouds.models.detectors.adversarial_voxel_net  # noqa: F401
-import robustpointclouds.models.detectors.adversarial_ssd3d_net  # noqa: F401
 import robustpointclouds.models.adversaries.voxel_perturber  # noqa: F401
 
 

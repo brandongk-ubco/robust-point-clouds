@@ -1,7 +1,6 @@
 import pytorch_lightning as pl
-from mmcv import Config
-from mmdet3d.datasets import build_dataset
-from mmcv.parallel import collate
+from mmengine.config import Config
+from mmdet3d.registry import DATASETS
 import torch
 from functools import partial
 import copy
@@ -24,9 +23,9 @@ class mmdetection3dDataModule(pl.LightningDataModule):
 
         val_config.test_mode = False
 
-        self.train_dataset = build_dataset(self.cfg.data.train)
-        self.val_dataset = build_dataset(val_config)
-        self.test_dataset = build_dataset(self.cfg.data.test)
+        self.train_dataset = DATASETS.build(self.cfg.data.train)
+        self.val_dataset = DATASETS.build(val_config)
+        self.test_dataset = DATASETS.build(self.cfg.data.test)
 
     def train_dataloader(self):
         data_loader = torch.utils.data.DataLoader(
@@ -36,8 +35,7 @@ class mmdetection3dDataModule(pl.LightningDataModule):
             persistent_workers=self.num_workers > 0,
             shuffle=True,
             drop_last=True,
-            pin_memory=True,
-            collate_fn=partial(collate, samples_per_gpu=self.batch_size))
+            pin_memory=True)
         return data_loader
 
     def val_dataloader(self):
@@ -48,8 +46,7 @@ class mmdetection3dDataModule(pl.LightningDataModule):
             persistent_workers=self.num_workers > 0,
             shuffle=False,
             drop_last=True,
-            pin_memory=True,
-            collate_fn=partial(collate, samples_per_gpu=self.batch_size))
+            pin_memory=True)
         return data_loader
 
     def test_dataloader(self):
@@ -60,8 +57,7 @@ class mmdetection3dDataModule(pl.LightningDataModule):
             persistent_workers=self.num_workers > 0,
             shuffle=False,
             drop_last=False,
-            pin_memory=True,
-            collate_fn=partial(collate, samples_per_gpu=1))
+            pin_memory=True)
         return data_loader
 
 

@@ -16,4 +16,4 @@ wget -c  https://raw.githubusercontent.com/traveller59/second.pytorch/master/sec
 mkdir "checkpoints"
 wget -c https://download.openmmlab.com/mmdetection3d/v1.1.0_models/second/second_hv_secfpn_8xb6-80e_kitti-3d-car/second_hv_secfpn_8xb6-80e_kitti-3d-car-75d9305e.pth --no-check-certificate --content-disposition -O checkpoints/second_hv_secfpn_8xb6-80e_kitti-3d-car-75d9305e.pth
 
-python mmdetection3d/tools/create_data.py kitti --root-path ./data/kitti --out-dir ./data/kitti --extra-tag kitti
+PYTHONPATH=${PWD}/mmdetection3d:$PYTHONPATH python mmdetection3d/tools/create_data.py kitti --root-path ./data/kitti --out-dir ./data/kitti --extra-tag kitti

@@ -1,6 +1,5 @@
-rem Install wget from here: https://eternallybored.org/misc/wget/
-mkdir "data/kitti"
-mkdir "data/kitti/ImageSets"
+mkdir -p "data/kitti"
+mkdir -p "data/kitti/ImageSets"
 wget -c https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_velodyne.zip --no-check-certificate --content-disposition -O ./data/kitti/data_object_velodyne.zip
 wget -c https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_image_2.zip --no-check-certificate --content-disposition -O ./data/kitti/data_object_image_2.zip
 wget -c https://s3.eu-central-1.amazonaws.com/avg-kitti/data_object_label_2.zip --no-check-certificate --content-disposition -O ./data/kitti/data_object_label_2.zip
@@ -15,6 +14,6 @@ wget -c  https://raw.githubusercontent.com/traveller59/second.pytorch/master/sec
 wget -c  https://raw.githubusercontent.com/traveller59/second.pytorch/master/second/data/ImageSets/trainval.txt --no-check-certificate --content-disposition -O ./data/kitti/ImageSets/trainval.txt
 
 mkdir "checkpoints"
-wget -c https://download.openmmlab.com/mmdetection3d/v1.1.0_models/second/second_hv_secfpn_8xb6-80e_kitti-3d-car/second_hv_secfpn_8xb6-80e_kitti-3d-car-75d9305e.pth --no-check-certificate --content-disposition -O checkpoints/second_hv_secfpn_8xb6-80e_kitti-3d-car-75d9305e.pth 
+wget -c https://download.openmmlab.com/mmdetection3d/v1.1.0_models/second/second_hv_secfpn_8xb6-80e_kitti-3d-car/second_hv_secfpn_8xb6-80e_kitti-3d-car-75d9305e.pth --no-check-certificate --content-disposition -O checkpoints/second_hv_secfpn_8xb6-80e_kitti-3d-car-75d9305e.pth
 
-python mmdetection3d/tools/create_data.py kitti --root-path ./data/kitti --out-dir ./data/kitti --extra-tag kitti
+PYTHONPATH=${PWD}/mmdetection3d:$PYTHONPATH python mmdetection3d/tools/create_data.py kitti --root-path ./data/kitti --out-dir ./data/kitti --extra-tag kitti

@@ -1,16 +1,11 @@
 import pytorch_lightning as pl
-from mmcv import Config
-from mmdet import __version__ as mmdet_version
-from mmdet3d import __version__ as mmdet3d_version
-from mmseg import __version__ as mmseg_version
-from mmdet3d.models import build_model
-from mmcv.runner import load_checkpoint
-from mmdet3d.datasets import build_dataset
+from mmengine.config import Config
+from mmengine.runner import load_checkpoint
+from mmdet3d.registry import MODELS
 import torch
 from pytorch_lightning.callbacks import ModelCheckpoint, DeviceStatsMonitor
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
 from mmdet3d.apis.inference import inference_detector
-
 
 class mmdetection3dLightningModule(pl.LightningModule):
 
@@ -27,20 +22,7 @@ class mmdetection3dLightningModule(pl.LightningModule):
 
         self.cfg = Config.fromfile(config_file)
 
-        self.dataset = build_dataset(self.cfg.data.train)
-
-        self.cfg.checkpoint_config.meta = dict(
-            mmdet_version=mmdet_version,
-            mmseg_version=mmseg_version,
-            mmdet3d_version=mmdet3d_version,
-            config=self.cfg.pretty_text,
-            CLASSES=self.dataset.CLASSES,
-            PALETTE=self.dataset.PALETTE  # for segmentors
-            if hasattr(self.dataset, 'PALETTE') else None)
-
-        self.model = build_model(self.cfg.model,
-                                 train_cfg=self.cfg.get('train_cfg'),
-                                 test_cfg=self.cfg.get('test_cfg'))
+        self.model = MODELS.build(self.cfg.model)
 
         self.model.cfg = self.cfg
 
@@ -78,6 +60,9 @@ class mmdetection3dLightningModule(pl.LightningModule):
         return {"optimizer": optimizer}
 
     def forward(self, sample, return_loss=False):
+
+        import pdb
+        pdb.set_trace()
 
         data = {
             "points": sample["points"].data[0],

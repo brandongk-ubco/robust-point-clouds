@@ -1,7 +1,8 @@
 _base_ = [
-    '../_base_/models/hv_second_secfpn_kitti.py',
-    '../_base_/datasets/kitti-3d-car.py', '../_base_/schedules/cyclic_40e.py',
-    '../_base_/default_runtime.py'
+    '../../mmdetection3d/configs/_base_/models/second_hv_secfpn_kitti.py',
+    '../../mmdetection3d/configs/_base_/datasets/kitti-3d-car.py',
+    '../../mmdetection3d/configs/_base_/schedules/cyclic-40e.py',
+    '../../mmdetection3d/configs/_base_/default_runtime.py'
 ]
 point_cloud_range = [0, -40, -3, 70.4, 40, 1]
 model = dict(

@@ -63,14 +63,21 @@ class mmdetection3dLightningModule(pl.LightningModule):
 
         import pdb
         pdb.set_trace()
+        
+        det3d_data_sample = sample['data_samples'][0]
+        
 
+        # Extracting necessary fields
         data = {
-            "points": sample["points"].data[0],
-            "img_metas": sample["img_metas"].data[0],
-            "gt_labels_3d": sample["gt_labels_3d"].data[0],
-            "gt_bboxes_3d": sample["gt_bboxes_3d"].data[0]
+            "points": det3d_data_sample.lidar2img,
+            #"points": sample["inputs"]["points"][0],    #points could also possibly be this
+            "img_metas": det3d_data_sample.metainfo,    
+            "gt_labels_3d": det3d_data_sample.eval_ann_info['gt_labels_3d'], 
+            "gt_bboxes_3d": det3d_data_sample.eval_ann_info['gt_bboxes_3d']        
         }
 
+
+        # Processing the data for the model
         for i in data["img_metas"]:
             i["pcd_rotation"] = i["pcd_rotation"].clone().to(self.device)
 

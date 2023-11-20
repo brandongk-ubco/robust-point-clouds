@@ -69,17 +69,18 @@ class mmdetection3dLightningModule(pl.LightningModule):
 
         # Extracting necessary fields
         data = {
-            "points": det3d_data_sample.lidar2img,
-            #"points": sample["inputs"]["points"][0],    #points could also possibly be this
-            "img_metas": det3d_data_sample.metainfo,    
-            "gt_labels_3d": det3d_data_sample.eval_ann_info['gt_labels_3d'], 
-            "gt_bboxes_3d": det3d_data_sample.eval_ann_info['gt_bboxes_3d']        
+            #"points": det3d_data_sample.lidar2img,      # this is of type list
+            "points": sample["inputs"]["points"][0],    # points is most likely this as it is type 'torch.Tensor
+            "img_metas": det3d_data_sample.metainfo,    # type dict  
+            "gt_labels_3d": det3d_data_sample.eval_ann_info['gt_labels_3d'],    # type numpy.ndarray
+            "gt_bboxes_3d": det3d_data_sample.eval_ann_info['gt_bboxes_3d']    # type mmdet3d.structures.bbox_3d.lidar_box3d.LiDARInstance3DBoxes    
         }
 
 
-        # Processing the data for the model
-        for i in data["img_metas"]:
-            i["pcd_rotation"] = i["pcd_rotation"].clone().to(self.device)
+        # Modified this as the img_metas from metainfo is dict not list of dictionaries 
+        if isinstance(data["img_metas"], dict) and "pcd_rotation" in data["img_metas"]:
+            data["img_metas"]["pcd_rotation"] = data["img_metas"]["pcd_rotation"].clone().to(self.device)
+
 
         for idx_i, i in enumerate(data["points"]):
             data["points"][idx_i] = i.clone().to(self.device)
